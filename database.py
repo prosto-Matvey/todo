@@ -29,7 +29,7 @@ def init_db():
                 id INTEGER PRIMARY KEY,
                 title TEXT NOT NULL,
                 description TEXT,
-                is_completed BOOLEAN NOT NULL DEFAULT 0
+                is_completed BOOLEAN NOT NULL DEFAULT 0,
             )
         """)
         
