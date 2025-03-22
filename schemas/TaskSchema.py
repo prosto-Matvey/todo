@@ -1,11 +1,18 @@
+# schemas/TaskSchema.py
 from pydantic import BaseModel
-from typing import Optional
+
+class TaskCreate(BaseModel):
+    title: str
+    description: str | None = None
+    is_completed: bool = False
 
 class Task(BaseModel):
-    id: int
     title: str
-    description: Optional[str] = None
+    description: str | None = None
     is_completed: bool = False
+
+    class Config:
+        orm_mode = True
 
 class TaskUpdate(BaseModel):
     title: str | None = None

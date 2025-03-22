@@ -1,15 +1,16 @@
+# database.py
 import sqlite3
 from contextlib import contextmanager
 
 DATABASE_URL = "tasks.db"
 
 def get_db_connection():
-    """Создает подключени к базе данных и возвращает его"""
+    """Create a database connection and return it"""
     return sqlite3.connect(DATABASE_URL)
 
 @contextmanager
 def get_db_cursor():
-    """Контекстный менеджер для работы с операциями базы данных"""
+    """Context manager for database operations"""
     conn = get_db_connection()
     cursor = conn.cursor()
     try:
@@ -22,14 +23,16 @@ def get_db_cursor():
         conn.close()
 
 def init_db():
-    """Инициализация базы данных с нужными таблицами"""
+    """Initialize the database with required tables"""
     with get_db_cursor() as cursor:
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS tasks (
-                id INTEGER PRIMARY KEY,
+                id TEXT PRIMARY KEY,  -- UUID как текст
                 title TEXT NOT NULL,
                 description TEXT,
                 is_completed BOOLEAN NOT NULL DEFAULT 0,
+                user_id INTEGER NOT NULL,
+                FOREIGN KEY (user_id) REFERENCES users(id)
             )
         """)
         

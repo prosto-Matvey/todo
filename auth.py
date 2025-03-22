@@ -1,4 +1,4 @@
-from fastapi import Depends, HTTPException
+from fastapi import Depends, HTTPException, Request
 from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
 from passlib.context import CryptContext
@@ -38,13 +38,15 @@ def create_access_token(data: dict, expires_delta: timedelta | None = None):
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
 
-# Получение текущего пользователя
-async def get_current_user(token: str = Depends(oauth2_scheme)):
+# Получение текущего пользователя из cookie
+async def get_current_user(request: Request):
     credentials_exception = HTTPException(
         status_code=401,
         detail="Не удалось проверить учетные данные",
-        headers={"WWW-Authenticate": "Bearer"},
     )
+    token = request.cookies.get("access_token")  # Извлекаем токен из cookie
+    if not token:
+        raise credentials_exception
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         username = payload.get("sub")
