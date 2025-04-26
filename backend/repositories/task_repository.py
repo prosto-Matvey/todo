@@ -34,7 +34,7 @@ def get_task_by_id(task_id: str, user_id: int) -> Task:
         row = cursor.fetchone()
         if row is None:
             raise HTTPException(status_code=404, detail="Задача не найдена или не принадлежит вам")
-        return Task(title=row[1], description=row[2], is_completed=bool(row[3]))
+        return Task(id=row[0], title=row[1], description=row[2], is_completed=bool(row[3]))
 
 def update_task(task_id: str, task_update: TaskUpdate, user_id: int):
     task = get_task_by_id(task_id, user_id)  # Проверяем, что задача принадлежит пользователю
@@ -44,10 +44,10 @@ def update_task(task_id: str, task_update: TaskUpdate, user_id: int):
 
     with get_db_cursor() as cursor:
         cursor.execute(
-            "UPDATE tasks SET title = ?, description = ?, is_completed = ? WHERE user_id = ?",
-            (new_title, new_description, new_is_completed, user_id)
+            "UPDATE tasks SET title = ?, description = ?, is_completed = ? WHERE id = ?",
+            (new_title, new_description, new_is_completed,  task_id)
         )
-        return Task(title=new_title, description=new_description, is_completed=new_is_completed)
+        return Task(id=task_id, title=new_title, description=new_description, is_completed=new_is_completed)
 
 def delete_task(task_id: str, user_id: int):
     with get_db_cursor() as cursor:
